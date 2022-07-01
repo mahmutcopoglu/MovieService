@@ -7,9 +7,6 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-
-
-
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class Movie {
 

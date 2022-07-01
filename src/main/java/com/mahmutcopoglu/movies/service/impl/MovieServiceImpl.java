@@ -37,18 +37,27 @@ public class MovieServiceImpl implements IMovieService {
 
 	@Override
 	public ServiceResponseData getMovieSearchById(String id) throws IOException {
-		if (this.fileServiceImpl.getById(id) != null) {
-			Movie movie = this.fileServiceImpl.getById(id);
+		var searchinFileMovie = this.fileServiceImpl.getById(id);
+		if (searchinFileMovie != null) {
+			Movie movie = searchinFileMovie;
 			var serviceResponseData = new ServiceResponseData();
-	    	serviceResponseData.setMessage("Dosyadan okundu!");
+	    	serviceResponseData.setMessage("Read from movie list");
 	    	serviceResponseData.setMovies(movie);
 			return serviceResponseData;
 		}
+
 		String body = this.collectApiServiceImpl.searchById(id);
 		Movie movie = this.mapper.mappedMovieId(body);
+		var isSaved = this.fileServiceImpl.saveMovie(movie);
 		var serviceResponseData = new ServiceResponseData();
-    	serviceResponseData.setMessage("API ile dış servisten okundu!");
-    	serviceResponseData.setMovies(movie);
+		if(isSaved){
+			serviceResponseData.setMessage("Read from API. Added to your movie list");
+		}
+		else
+		{
+			serviceResponseData.setMessage("An error occurred");
+		}
+		serviceResponseData.setMovies(movie);
 		return serviceResponseData;
 		
 	}
@@ -58,14 +67,14 @@ public class MovieServiceImpl implements IMovieService {
 		if (this.fileServiceImpl.getById(id) != null) {
 			Movie movie = this.fileServiceImpl.getById(id);
 			var serviceResponseData = new ServiceResponseData();
-	    	serviceResponseData.setMessage("Dosyadan okundu!");
+	    	serviceResponseData.setMessage("Read from movie list");
 	    	serviceResponseData.setMovies(movie);
 			return serviceResponseData;
 		}
 		String body = this.collectApiServiceImpl.searchById(id);
 		Movie movie = this.mapper.mappedMovieId(body);
 		var serviceResponseData = new ServiceResponseData();
-    	serviceResponseData.setMessage("API ile dış servisten okundu!");
+    	serviceResponseData.setMessage("Read from API.");
     	serviceResponseData.setMovies(movie);
 		return serviceResponseData;
 	}

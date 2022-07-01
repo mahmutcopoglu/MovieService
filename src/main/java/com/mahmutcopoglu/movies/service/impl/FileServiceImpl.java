@@ -18,7 +18,7 @@ import com.mahmutcopoglu.movies.service.IFile;
 @Component
 public class FileServiceImpl implements IFile {
 	private File file = new File("movies.txt");
-	
+
 	public FileServiceImpl() {
 		this.init();
 	}
@@ -32,7 +32,7 @@ public class FileServiceImpl implements IFile {
 			}
 		}
 	}
-	
+
 	private String fileInTheMovie(String movieId) throws IOException {
 		FileReader fileReader = new FileReader(file);
 		String line = null;
@@ -40,7 +40,7 @@ public class FileServiceImpl implements IFile {
 
 		try {
 			while ((line = bufferedReader.readLine()) != null) {
-				if (line.contains("imdbId=" + movieId)) {
+				if (line.startsWith(movieId+",")) {
 					return line;
 				}
 			}
@@ -49,34 +49,39 @@ public class FileServiceImpl implements IFile {
 		} finally {
 			bufferedReader.close();
 		}
-		return line = null;
+		return line;
 	}
-	
+
 	@Override
-	public Boolean save(Movie movie) throws IOException {
-		if (fileInTheMovie(movie.getImdbId()) == null) {
-			FileWriter writter = new FileWriter(file,true);
-			BufferedWriter bufferedWriter = new BufferedWriter(writter);
-			try {
-				bufferedWriter.write(movie.toString().substring(5) + "\n");
-				return true;
-			} catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				bufferedWriter.close();
-			}
+	public Boolean saveMovie(Movie movie) throws IOException {
+
+		String fileLine = movie.getImdbId() + "," + movie.getTitle() + "," + movie.getType() + "," + movie.getYear()+ "," + movie.getPoster();
+		FileWriter writter = new FileWriter(file,true);
+		BufferedWriter bufferedWriter = new BufferedWriter(writter);
+		try {
+			bufferedWriter.write(fileLine.replaceAll("\"",""));
+			bufferedWriter.newLine();
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			bufferedWriter.close();
 		}
+
 		return false;
 	}
-	
+
 	@Override
 	public Movie getById(String movieId) throws FileNotFoundException, IOException {
-		if (fileInTheMovie('"' + movieId + '"') != null) {
-			return mapperForMovie(fileInTheMovie('"' + movieId + '"'));
+		var a = fileInTheMovie(movieId);
+
+		if (a != null) {
+			return mapperForMovie(a);
 		}
+
 		return null;
 	}
-	
+
 	private Movie mapperForMovie(String text) {
 		List<String> movie = new ArrayList<>();
 
@@ -87,7 +92,7 @@ public class FileServiceImpl implements IFile {
 		}
 		return new Movie(movie.get(0), movie.get(1), movie.get(2), movie.get(3), movie.get(4));
 	}
-	
-	
+
+
 
 }

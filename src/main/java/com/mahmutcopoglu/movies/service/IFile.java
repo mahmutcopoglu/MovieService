@@ -7,7 +7,7 @@ import com.mahmutcopoglu.movies.dto.Movie;
 
 public interface IFile {
 	
-	Boolean save(Movie movie) throws IOException;
+	Boolean saveMovie(Movie movie) throws IOException;
 
 	Movie getById(String movieId) throws FileNotFoundException, IOException;
 
